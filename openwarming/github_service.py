@@ -1,4 +1,5 @@
 import requests
+import dateutil.parser
 
 class UserNotFound(Exception):
     def errorMessage(self):
@@ -44,6 +45,7 @@ def getUserReposCreationDates(anUsername):
     reposCreationDates = []
 
     for repoData in reposData:
-        reposCreationDates.append(repoData["created_at"])
+        stringDate = repoData["created_at"]
+        reposCreationDates.append(dateutil.parser.parse(stringDate))
 
     return reposCreationDates
