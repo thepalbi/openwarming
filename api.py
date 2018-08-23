@@ -1,4 +1,5 @@
 import requests
+import json
 import tornado.ioloop
 import tornado.web
 import traceback
@@ -8,13 +9,17 @@ class TemperatureHandler(tornado.web.RequestHandler):
     def get(self, ghUser):
         userLocation = None
         userReposCreationDates = None
-        temperatures = {}
+        temperatures = []
         try:
             userLocation = github_service.getUserLocation(ghUser)
             userReposCreationDates = github_service.getUserReposCreationDates(ghUser)
 
             for repoCreationDate in userReposCreationDates:
-                temperatures[str(repoCreationDate)] = weather_service.getDateAverageTemperature(repoCreationDate, userLocation)
+                averageTemperature = weather_service.getDateAverageTemperature(repoCreationDate, userLocation)
+                temperatures.append({
+                    "date": str(repoCreationDate),
+                    "avgTemperature": averageTemperature
+                })
 
         except (github_service.UserNotFound, github_service.APIError, github_service.UserWithoutLocation) as e:
             self.set_status(404)
@@ -26,7 +31,7 @@ class TemperatureHandler(tornado.web.RequestHandler):
             print("Unhandled exception: " + str(e) + f'\nStackTrace: {traceback.format_exc()}')
             return
 
-        self.write(temperatures)
+        self.write(json.dumps(temperatures))
 
 def make_app():
     return tornado.web.Application([
