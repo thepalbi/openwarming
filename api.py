@@ -4,18 +4,6 @@ import tornado.web
 import traceback
 from openwarming import github_service
 
-class UserNotFound(Exception):
-    def errorMessage(self):
-        return "invalid_github_user"
-
-class UserWithoutLocation(Exception):
-    def errorMessage(self):
-        return "user_has_no_location_defined"
-
-class APIError(Exception):
-    def errorMessage(self):
-        return "error_in_api_request"
-
 # t % curl -v 'http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=d865b95a583447a593b210600182308&q=Argentina&format=json&date=2018-04-11'|jq "."
 WEATHER_API_KEY = "d865b95a583447a593b210600182308"
 
