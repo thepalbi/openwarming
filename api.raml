@@ -1,0 +1,22 @@
+#%RAML 1.0
+title: OpenWarming API
+version: v1
+baseUri: http://localhost:8888
+mediaType:  application/json
+
+types: 
+  RepoTemperature:
+    type: object
+    properties: 
+          date: datetime
+          avgTemperature: number
+    
+
+/temperatures:
+    /{githubUser}:
+        get:
+            responses:
+                200:
+                    body:
+                        application/json:
+                            type: RepoTemperature[]
