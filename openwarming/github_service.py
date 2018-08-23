@@ -30,6 +30,7 @@ def getUserLocation(anUsername):
 
     return userData["location"]
 
+# TODO: Sort dates in increasing order
 def getUserReposCreationDates(anUsername):
     response = requests.get("https://api.github.com/users/" + anUsername + "/repos")
     reposData = response.json()
