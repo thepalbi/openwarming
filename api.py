@@ -2,6 +2,7 @@ import requests
 import tornado.ioloop
 import tornado.web
 import traceback
+from openwarming import github_service
 
 class UserNotFound(Exception):
     def errorMessage(self):
@@ -14,42 +15,6 @@ class UserWithoutLocation(Exception):
 class APIError(Exception):
     def errorMessage(self):
         return "error_in_api_request"
-
-def getUserLocation(anUsername):
-    response = requests.get("https://api.github.com/users/" + anUsername)
-    userData = response.json()
-
-    if response.status_code == 404 and\
-        "message" in userData and\
-        userData["message"] == "Not Found":
-        raise UserNotFound
-
-    if response.status_code != 200:
-        raise APIError
-
-    if userData["location"] is None:
-        raise UserWithoutLocation
-
-    return userData["location"]
-
-def getUserReposCreationDates(anUsername):
-    response = requests.get("https://api.github.com/users/" + anUsername + "/repos")
-    reposData = response.json()
-
-    if response.status_code == 404 and\
-        "message" in reposData and\
-        reposData["message"] == "Not Found":
-        raise UserNotFound
-
-    if response.status_code != 200:
-        raise APIError
-
-    reposCreationDates = []
-
-    for repoData in reposData:
-        reposCreationDates.append(repoData["created_at"])
-
-    return reposCreationDates
 
 # t % curl -v 'http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=d865b95a583447a593b210600182308&q=Argentina&format=json&date=2018-04-11'|jq "."
 WEATHER_API_KEY = "d865b95a583447a593b210600182308"
@@ -79,10 +44,10 @@ class TemperatureHandler(tornado.web.RequestHandler):
         userLocation = None
 
         try:
-            userLocation = getUserLocation(ghUser)
+            userLocation = github_service.getUserLocation(ghUser)
             # print(getUserReposCreationDates(ghUser))
             print(getDateAverageTemperature("2018-04-12", "Argentina"))
-        except (UserNotFound, APIError, UserWithoutLocation) as e:
+        except (github_service.UserNotFound, github_service.APIError, github_service.UserWithoutLocation) as e:
             self.set_status(404)
             self.write(e.errorMessage())
             return
