@@ -6,27 +6,40 @@ class TemperatureHandler(tornado.web.RequestHandler):
     def get(self, ghUser):
         userLocation = None
         userReposCreationDates = None
-        temperatures = []
         try:
             userLocation = github_service.getUserLocation(ghUser)
             userReposCreationDates = github_service.getUserReposCreationDates(ghUser)
-
-            for repoCreationDate in userReposCreationDates:
-                averageTemperature = weather_service.getDateAverageTemperature(repoCreationDate, userLocation)
-                temperatures.append({
-                    "date": str(repoCreationDate),
-                    "avgTemperature": averageTemperature
-                })
-
         except (github_service.UserNotFound, github_service.APIError, github_service.UserWithoutLocation) as e:
             self.set_status(404)
             self.write(e.errorMessage())
             return
-
         except Exception as e:
-            self.set_status(500)
-            self.write("unhandled_exception")
-            print("Unhandled exception: " + str(e) + f'\nStackTrace: {traceback.format_exc()}')
+            self.handleUnexpectedException(e)
             return
 
-        self.write(json.dumps(temperatures))
+        reposCount = len(userReposCreationDates)
+        reposTemps = []
+
+        for repoCreationDate in userReposCreationDates:
+            averageTemperature = None
+            try:
+                averageTemperature = weather_service.getDateAverageTemperature(repoCreationDate, userLocation)
+            # TODO: Handle this exception in some other way, to show some possible cause.
+            # No 404 returned, since this is independant of the input the endpoint recieves from
+            # the user.
+            except Exception as e:
+                self.handleUnexpectedException(e)
+                return
+
+            reposTemps.append(averageTemperature)
+
+        self.write({
+            "repositoriesCount": reposCount,
+            "avgTemperatures": reposTemps
+        })
+
+    def handleUnexpectedException(self, e):
+        self.set_status(500)
+        self.write("unhandled_exception")
+        print("Unhandled exception: " + str(e) + f'\nStackTrace: {traceback.format_exc()}')
+
