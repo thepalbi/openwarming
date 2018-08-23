@@ -26,6 +26,8 @@ def make_app():
     ])
 
 if __name__ == "__main__":
+    DEFAULT_PORT = 8888
     app = make_app()
-    app.listen(8888)
+    app.listen(DEFAULT_PORT)
+    print(f'Serving openWarming API in localhost:{DEFAULT_PORT}')
     tornado.ioloop.IOLoop.current().start().start()
