@@ -7,6 +7,9 @@ class UserNotFound(Exception):
     def errorMessage(self):
         return "invalid_github_user"
 
+class UserWithoutLocation(Exception):
+    def errorMessage(self):
+        return "user_has_no_location_defined"
 
 class APIError(Exception):
     def errorMessage(self):
@@ -23,6 +26,9 @@ def getUserLocation(anUsername):
 
     if response.status_code != 200:
         raise APIError
+
+    if userData["location"] is None:
+        raise UserWithoutLocation
 
     return userData["location"]
 
@@ -53,7 +59,7 @@ class TemperatureHandler(tornado.web.RequestHandler):
             userLocation = getUserLocation(ghUser)
 
             print(getUserReposCreationDates(ghUser))
-        except (UserNotFound, APIError) as e:
+        except (UserNotFound, APIError, UserWithoutLocation) as e:
             self.set_status(404)
             self.write(e.errorMessage())
             return
