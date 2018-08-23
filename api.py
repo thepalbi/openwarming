@@ -1,6 +1,7 @@
 import requests
 import tornado.ioloop
 import tornado.web
+import traceback
 
 class UserNotFound(Exception):
     def errorMessage(self):
@@ -15,14 +16,34 @@ def getUserLocation(anUsername):
     response = requests.get("https://api.github.com/users/" + anUsername)
     userData = response.json()
 
-    if response.status_code != 200:
-        raise APIError
-
-    if "message" in userData and\
+    if response.status_code == 404 and\
+        "message" in userData and\
         userData["message"] == "Not Found":
         raise UserNotFound
 
+    if response.status_code != 200:
+        raise APIError
+
     return userData["location"]
+
+def getUserReposCreationDates(anUsername):
+    response = requests.get("https://api.github.com/users/" + anUsername + "/repos")
+    reposData = response.json()
+
+    if response.status_code == 404 and\
+        "message" in reposData and\
+        reposData["message"] == "Not Found":
+        raise UserNotFound
+
+    if response.status_code != 200:
+        raise APIError
+
+    reposCreationDates = []
+
+    for repoData in reposData:
+        reposCreationDates.append(repoData["created_at"])
+
+    return reposCreationDates
 
 class TemperatureHandler(tornado.web.RequestHandler):
     def get(self, ghUser):
@@ -30,13 +51,16 @@ class TemperatureHandler(tornado.web.RequestHandler):
 
         try:
             userLocation = getUserLocation(ghUser)
+
+            print(getUserReposCreationDates(ghUser))
         except (UserNotFound, APIError) as e:
             self.set_status(404)
             self.write(e.errorMessage())
             return
         except Exception as e:
             self.set_status(500)
-            self.write("Unhandled exception: " + str(e))
+            self.write("unhandled_exception")
+            print("Unhandled exception: " + str(e) + f'\nStackTrace: {traceback.format_exc()}')
             return
 
         self.write(userLocation)
