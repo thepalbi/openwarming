@@ -1,5 +1,5 @@
 # OpenWarming
-## Ejercicio técnico para Brubank
+Ejercicio técnico para Brubank
 
 ### Decisiones de diseño
 
