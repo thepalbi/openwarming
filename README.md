@@ -1,5 +1,4 @@
 # OpenWarming
-## Es cierto que a más open source, mayor calentamiento global?
 ## Ejercicio técnico para Brubank
 
 ### Decisiones de diseño
