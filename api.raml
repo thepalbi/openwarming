@@ -12,6 +12,13 @@ types:
     description: |
         Contains the number of repositories created by the user,
         and a list of the average temperatures of each day of creation.
+    ErrorMessage:
+        properties:
+            message: string
+        description: |
+            Error message description.
+
+# TODO: Add response examples
 
 /temperatures:
     /{githubUser}:
@@ -22,10 +29,16 @@ types:
                         application/json:
                             type: OpenWarmingResponse
                 404:
+                    body:
+                        application/json:
+                            type: ErrorMessage
                     description: |
                         Invalid username or username has no location.
                         Also shown in returned message.
                 500:
+                    body:
+                        application/json:
+                            type: ErrorMessage
                     description: |
                         Internal sever error. Check server CLI output, or error stacktrace.
 
