@@ -21,6 +21,8 @@ El diseño de la API consiste en una clase principal, Server, la cual posee la l
 
 En estos esta definido los métodos correspondiente a la info que es necesario recuperar de cada API, pero no hay un objeto que represente los servicios en si. Esto es debido a que los mismos son stateless por el momento (si se agregara algún tipo de caching, que posiblemente convenga a wather service, habría que definir un objeto que represente al mismo, y que sea colaborador de la cache utilizada para el mismo).
 
+A lo largo del proyecto hay **TODO's** definidos. Son cambios que debería hacer como siguientes iteraciones al mismo.
+
 ### Requerimientos
 - Python 3.7.0
 - Instalar dependencias con ```pip install -u -r requirements.txt```
