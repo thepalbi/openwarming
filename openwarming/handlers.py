@@ -9,9 +9,9 @@ class TemperatureHandler(tornado.web.RequestHandler):
         try:
             userLocation = github_service.getUserLocation(ghUser)
             userReposCreationDates = github_service.getUserReposCreationDates(ghUser)
-        except (github_service.UserNotFound, github_service.APIError, github_service.UserWithoutLocation) as e:
+        except (github_service.UserNotFound, github_service.UserWithoutLocation) as e:
             self.set_status(404)
-            self.write(e.errorMessage())
+            self.writeExceptionMessage(e.errorMessage())
             return
         except Exception as e:
             self.handleUnexpectedException(e)
@@ -38,8 +38,14 @@ class TemperatureHandler(tornado.web.RequestHandler):
             "avgTemperatures": reposTemps
         })
 
+    def writeExceptionMessage(self, message):
+        self.write({
+            "message": message
+        })
+
     def handleUnexpectedException(self, e):
         self.set_status(500)
-        self.write("unhandled_exception")
+        self.writeExceptionMessage("unhandled_exception - %s" % (e.__class__.__name__))
         print("Unhandled exception: " + str(e) + f'\nStackTrace: {traceback.format_exc()}')
+
 

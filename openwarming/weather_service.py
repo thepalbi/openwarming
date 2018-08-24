@@ -1,4 +1,5 @@
 import requests
+from .github_service import APIError
 
 # t % curl -v 'http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=d865b95a583447a593b210600182308&q=Argentina&format=json&date=2018-04-11'|jq "."
 WEATHER_API_KEY = "d865b95a583447a593b210600182308"
