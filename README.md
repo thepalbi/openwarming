@@ -21,6 +21,13 @@ El diseño de la API consiste en una clase principal, Server, la cual posee la l
 
 En estos esta definido los métodos correspondiente a la info que es necesario recuperar de cada API, pero no hay un objeto que represente los servicios en si. Esto es debido a que los mismos son stateless por el momento (si se agregara algún tipo de caching, que posiblemente convenga a wather service, habría que definir un objeto que represente al mismo, y que sea colaborador de la cache utilizada para el mismo).
 
+**Update con respecto a lo anterior:**
+Se agregaron a los métodos de cada service caching, con distintas caches dependiendo de qué método. Las mismas pertences a (cachetools)[https://cachetools.readthedocs.io/en/latest/], una biblioteca que posee una serie de tipos de cache ya implementadas; y provee un mecanismo para agregar cachin a una función, mediante un wrapper sobre la misma, que usa como clave los argumentos de la función.
+
+Las caches fueron elegidas con el siguiente criterio:
+- En el caso de **weather_service**, como los datos no suelen cambiar a menudo, a menos que un repositorio se haya creado en el futuro, o en el día en el que se realiza el request a la API. Por ello, se optó por una cache LRU con 365 elementos, de manera de priorizar los llamados más frecuentes, y con un año de datos (lo cual parece un timespan razonable).
+- En el caso de **github_service**, los datos que responde la API no son inmutables, sino que un usuario podría llegar a cambiar su ubicación, y puede crear más repositorios, cambiando potencialmente la respuesta de ambos métodos. Por ello, se eligió un cache con TTL, de forma que los datos recordaos expiren (en este caso, con una hora de TTL). El tamaño elegido para ambas cache fue 100 elementos.
+
 A lo largo del proyecto hay **TODO's** definidos. Son cambios que debería hacer como siguientes iteraciones al mismo.
 
 ### Requerimientos
