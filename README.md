@@ -16,8 +16,9 @@ En cualquiera de los request que se hace (buscar la ubicación del usuario, trae
 - En el caso en el que se busca obtener la información climática de cada fecha, se podría optar por omitir que falle alguno de los request, y de esta mantera devolver una lista incompleta de temperaturas. Debido a que esto causaría una incongruencia con la cantidad de repositorios que también está en la respuesta (ya que sería una media calculada con menos datos), se optó por fallar.
 
 El diseño de la API consiste en una clase principal, Server, la cual posee la lógica para instanciar en servidor en si, bindearlo a un puerto (8888 por default, facilmente cambiable (aca)[https://github.com/plbalbi/openwarming/blob/master/main.py]). Luego, el handler del endpoint esta definido dentro de su propia clase, la cual subclasifica a los Hanlders proveídos por Tornado. Para no tener la lógica de obtener la info. del usuario solicitado de Github, y la info. climática, estas fueron separadas en dos services:
-- weather_service (Por ahora quedó la API_KEY aca, esto claramente debería ser cambiado a una variable de ambiente del equipo donde se corre el servido, o que el mismo la tome como parámetro. Queda como un TODO)
-- github_service
+- **weather_service** (Por ahora quedó la API_KEY aca, esto claramente debería ser cambiado a una variable de ambiente del equipo donde se corre el servido, o que el mismo la tome como parámetro. Queda como un TODO)
+- **github_service**
+
 En estos esta definido los métodos correspondiente a la info que es necesario recuperar de cada API, pero no hay un objeto que represente los servicios en si. Esto es debido a que los mismos son stateless por el momento (si se agregara algún tipo de caching, que posiblemente convenga a wather service, habría que definir un objeto que represente al mismo, y que sea colaborador de la cache utilizada para el mismo).
 
 ### Requerimientos
