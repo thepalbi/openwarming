@@ -16,11 +16,12 @@ def parseResponseBody(response):
 """
 TODO: A big one. Instead of making the actual requests to Github and Weather API's, find a way
 to mock the up. This would allow to make tests more deterministic, save the API keys entries,
-and make the test suite preety much faster.
+and make the test suite pretty much faster.
 """
 
 
-os.environ["ASYNC_TEST_TIMEOUT"] = str(10.)
+# Timeout increased to handle weather api slow response
+os.environ["ASYNC_TEST_TIMEOUT"] = str(60.)
 
 class ApiTestCase(AsyncHTTPTestCase):
 
