@@ -5,12 +5,13 @@ baseUri: http://localhost:8888
 mediaType:  application/json
 
 types: 
-  RepoTemperature:
-    type: object
+  OpenWarmingResponse:
     properties: 
-          date: datetime
-          avgTemperature: number
-    
+          repositoriesCount: number
+          avgTemperatures: number[]
+    description: |
+        Contains the number of repositories created by the user,
+        and a list of the average temperatures of each day of creation.
 
 /temperatures:
     /{githubUser}:
@@ -19,4 +20,12 @@ types:
                 200:
                     body:
                         application/json:
-                            type: RepoTemperature[]
+                            type: OpenWarmingResponse
+                404:
+                    description: |
+                        Invalid username or username has no location.
+                        Also shown in returned message.
+                500:
+                    description: |
+                        Internal sever error. Check server CLI output, or error stacktrace.
+
