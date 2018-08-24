@@ -1,17 +1,6 @@
 import requests
 import dateutil.parser
-
-class UserNotFound(Exception):
-    def errorMessage(self):
-        return "invalid_github_user"
-
-class UserWithoutLocation(Exception):
-    def errorMessage(self):
-        return "user_has_no_location_defined"
-
-class APIError(Exception):
-    def errorMessage(self):
-        return "error_in_api_request"
+from .exceptions import *
 
 def getUserLocation(anUsername):
     response = requests.get("https://api.github.com/users/" + anUsername)
@@ -23,7 +12,7 @@ def getUserLocation(anUsername):
         raise UserNotFound
 
     if response.status_code != 200:
-        raise APIError
+        raise APIError(response)
 
     if userData["location"] is None:
         raise UserWithoutLocation
@@ -41,7 +30,7 @@ def getUserReposCreationDates(anUsername):
         raise UserNotFound
 
     if response.status_code != 200:
-        raise APIError
+        raise APIError(response)
 
     reposCreationDates = []
 

@@ -1,6 +1,7 @@
 import tornado.web
 import traceback
 from . import github_service, weather_service
+from .exceptions import *
 
 class TemperatureHandler(tornado.web.RequestHandler):
     def get(self, ghUser):
@@ -9,7 +10,7 @@ class TemperatureHandler(tornado.web.RequestHandler):
         try:
             userLocation = github_service.getUserLocation(ghUser)
             userReposCreationDates = github_service.getUserReposCreationDates(ghUser)
-        except (github_service.UserNotFound, github_service.UserWithoutLocation) as e:
+        except (UserNotFound, UserWithoutLocation) as e:
             self.set_status(404)
             self.writeExceptionMessage(e.errorMessage())
             return
