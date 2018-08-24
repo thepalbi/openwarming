@@ -1,6 +1,6 @@
 from .server import Server
 
-from tornado.testing import AsyncHTTPTestCase
+from tornado.testing import AsyncHTTPTestCase, gen_test
 import tornado
 
 import logging
@@ -8,6 +8,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 import unittest
 import json
+import os
 
 def parseResponseBody(response):
     return json.loads(response.body.decode("utf8"))
@@ -18,7 +19,11 @@ to mock the up. This would allow to make tests more deterministic, save the API 
 and make the test suite preety much faster.
 """
 
+
+os.environ["ASYNC_TEST_TIMEOUT"] = str(10.)
+
 class ApiTestCase(AsyncHTTPTestCase):
+
     def get_app(self):
         self.app = Server(debug=True)
         return self.app
@@ -34,6 +39,16 @@ class ApiTestCase(AsyncHTTPTestCase):
         self.assertEqual(response.code,404)
         responseBody = parseResponseBody(response)
         self.assertEqual(responseBody["message"], "user_has_no_location_defined" )
+
+    def test_repos_and_temperatures_retrieved_correctly(self):
+        response = self.fetch(self.get_url('/temperatures/juanlanuzag'),method='GET')
+        self.assertEqual(response.code,200)
+        responseBody = parseResponseBody(response)
+        self.assertEqual(responseBody["repositoriesCount"], 8)
+        self.assertEqual(len(responseBody["avgTemperatures"]), 8)
+        self.assertIsInstance(responseBody["avgTemperatures"], list)
+
+    # Test case user without repositories created
 
 if __name__ == '__main__':
     unittest.main()
