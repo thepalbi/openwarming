@@ -24,5 +24,11 @@ class ApiTestCase(AsyncHTTPTestCase):
         responseBody = parseResponseBody(response)
         self.assertEqual(responseBody["message"], "invalid_github_user" )
 
+    def test_user_without_location_defined(self):
+        response = self.fetch(self.get_url('/temperatures/npazosmendez'),method='GET')
+        self.assertEqual(response.code,404)
+        responseBody = parseResponseBody(response)
+        self.assertEqual(responseBody["message"], "user_has_no_location_defined" )
+
 if __name__ == '__main__':
     unittest.main()
