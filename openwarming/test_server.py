@@ -12,6 +12,11 @@ import json
 def parseResponseBody(response):
     return json.loads(response.body.decode("utf8"))
 
+"""
+TODO: A big one. Instead of making the actual requests to Github and Weather API's, find a way
+to mock the up. This would allow to make tests more deterministic, save the API keys entries,
+and make the test suite preety much faster.
+"""
 
 class ApiTestCase(AsyncHTTPTestCase):
     def get_app(self):
