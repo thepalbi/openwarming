@@ -1,7 +1,12 @@
 import requests
 import dateutil.parser
 from .exceptions import *
+import cachetools
 
+usersCache = cachetools.TTLCache(maxsize=100, ttl=3600)
+reposCache = cachetools.TTLCache(maxsize=100, ttl=3600)
+
+@cachetools.cached(usersCache)
 def getUserLocation(anUsername):
     response = requests.get("https://api.github.com/users/" + anUsername)
     userData = response.json()
@@ -20,6 +25,7 @@ def getUserLocation(anUsername):
     return userData["location"]
 
 # TODO: Sort dates in increasing order
+@cachetools.cached(reposCache)
 def getUserReposCreationDates(anUsername):
     response = requests.get("https://api.github.com/users/" + anUsername + "/repos")
     reposData = response.json()

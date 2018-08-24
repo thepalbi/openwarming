@@ -1,4 +1,4 @@
-import requests
+import requests, cachetools
 from .github_service import APIError
 from .exceptions import *
 
@@ -9,6 +9,11 @@ WEATHER_API_KEY = "d865b95a583447a593b210600182308"
 @ aDate: Date object
 @ aLocation: Locations as string
 """
+
+# 365 element =~ roughly a year worth of dates data
+cache = cachetools.LRUCache(365)
+
+@cachetools.cached(cache)
 def getDateAverageTemperature(aDate, aLocation):
     # Add date format
     formattedDate = "%d-%02d-%02d" % (aDate.year, aDate.month, aDate.day)
