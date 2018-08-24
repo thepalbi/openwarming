@@ -33,10 +33,14 @@ class TemperatureHandler(tornado.web.RequestHandler):
 
             reposTemps.append(averageTemperature)
 
-        self.write({
-            "repositoriesCount": reposCount,
+        self.set_status(200)
+        self.write(self.writeResponse(reposCount, reposTemps))
+
+    def writeResponse(self, aReposCount, reposTemps):
+        return {
+            "repositoriesCount": aReposCount,
             "avgTemperatures": reposTemps
-        })
+        }
 
     def writeExceptionMessage(self, message):
         self.write({
